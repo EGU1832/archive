@@ -59,7 +59,7 @@ vertex 정보 -> 삼각형 정보 -> pixel 정보
 - 기술 상 core가 많아봤자 만 개 정도 되는데, GPU에서는 이 때문에 SIMD에 더해 더 많은 병렬 처리 기능들을 가지고 있다.  
 - Why SIMT(Single Instruction Nultiple Threads) not SIMD?:  
 - 일반적으로 실제로 풀고자 하는 SIMD 병렬성을 가진 문제에서는 각 SIMD element마다 execution path가 달라 고유의 context가 필요하다. 다음과 같은 코드의 예시가 있다.  
-```c++  
+```c++
 if(obj.0) {
 ...
 }
@@ -67,7 +67,7 @@ else if(obj.1) {
 ...
 }
 // 객체의 종류마다 다른 context의 프로그램이 돈다.
-```  
+```
 
 <br>
 
@@ -134,20 +134,25 @@ else if(obj.1) {
 <br>
 
 - 기본 terminology  
-- Kernel: CPU가 아니라 GPU에서 돌아가는 함수![](../../../../Z.%20Docs/img/Pasted%20image%2020240307170931.png)![](../../../../Z.%20Docs/img/Pasted%20image%2020240307171054.png)  
+- Kernel: CPU가 아니라 GPU에서 돌아가는 함수<img src="Docs/Pasted image 20240307170931.png">
+<img src="Docs/Pasted image 20240307171054.png">
+  
 1. Thread: SIMD 형태로  kernel 함수가 돌아가는 각각의 task  
 2. Thread block: Thread를 같은 크기로 묶어 놓은 것 $`2^{22}`$ 의 thread를 $`2^8`$ 의 tread block으로 묶으면 $`2^{14}`$ 개이다. 항상 동일한 개수로 묶어야 한다.  
 - Thread block dimension: 이것이 결정되면 몇개의 thread block이 나올지 결정된다. (ex. 128, 256..)  
 - `Thread block dimension은 32의 배수로 해라... 되도록이면...`  
 - [Thread block (CUDA programming) - Wikipedia](https://en.wikipedia.org/wiki/Thread_block_(CUDA_programming))  
-- thread를 이런 모양으로 만드면 warp가 이렇게 잡힌다.![](../../../../Z.%20Docs/img/Pasted%20image%2020240312165837.png)  
-- Cache적 관점에서는 thread를 이렇게 만드는 게 났다.![](../../../../Z.%20Docs/img/Pasted%20image%2020240312165956.png)  
+- thread를 이런 모양으로 만드면 warp가 이렇게 잡힌다.<img src="Docs/Pasted image 20240312165837.png">
+  
+- Cache적 관점에서는 thread를 이렇게 만드는 게 났다.<img src="Docs/Pasted image 20240312165956.png">
+  
 1. Grid: Thread block의 묶음  
 - Grid dimension: Thread block의 개수이다.  
 2. Warp: GPU가 thread block에서 32개씩 쪼개간다. 왜 그런지는 묻지 마라.  
 - 이렇게 32개로 묶어놓은 것을 warp라고 한다. 256개로 이루어진 thread block이라면 8 warp로 쪼개지는 것이다. 바로 이 32개가 SIMD 형태로 돈다.  
 - 하나의 명령만이 적용되어 병렬처리 된다는 것이다. 각각의 warp들은 순차적이 아니라 독립적으로 처리된다. warp가 모두 처리 되면 하나의 thread block의 task가 끝난 것이다.  
-- Warp의 크기는 *32*로 고정이다.![점선 오류 났어유](../../../../Z.%20Docs/img/Pasted%20image%2020240307171134.png)  
+- Warp의 크기는 *32*로 고정이다.<img src="Docs/Pasted image 20240307171134.png">
+  
 
 <br>
 
@@ -155,14 +160,16 @@ else if(obj.1) {
 
 <br>
 
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240307173212.png)  
+<img src="Docs/Pasted image 20240307173212.png">
+  
 - GeForce에서 그래픽 기능을 빼버린 게 Tesla이다.  
 - Quadro는 tesla의 장점에 그래픽까지 껴 놓은 것이다. 한 마디로 명품 GPU.  
 - Compute Capability: GPU의 기능 (본인은 Turing에 해당하는 capability이다.)  
 
 <br>
 
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240307173741.png)  
+<img src="Docs/Pasted image 20240307173741.png">
+  
 - **SM(Streaming multiprocessor)**: CUDA core를 여러 개 모아놓은 것  
 - L1 Cache/Shared Memory: L1 Cache만큼 빠른 메모리를 잡아서 프로그래밍 하는 것  
 - 82.6 TFLOP의 계산과정은 위에 나와있다. 이거의 $`\frac{1}{10}`$ 정도가 나오도록 코딩하는 것을 목표로 잡으면 된다.   
@@ -170,7 +177,8 @@ else if(obj.1) {
 
 <br>
 
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240307173716.png)  
+<img src="Docs/Pasted image 20240307173716.png">
+  
 
 <br>
 
@@ -187,13 +195,15 @@ else if(obj.1) {
 - 2개의 SM  
 - 1개의 PolyMorph Engine  
 - **SM**: `스레드의 관점에서는 SM이 가장 중요한 프로세싱 단위이다.`  
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240312173333.png)  
+<img src="Docs/Pasted image 20240312173333.png">
+  
 - CUDA core를 여러 개 박아놓은 것  
 - CUDA core는 streaming processor라고도 한다.  
 - 128 KB의 L1 Cache/Shared memory  
 - 4개의 Texture Units  
 - 1개의 $`3^{rd}`$ Gen. RT core  
-- 2개의 FP64 units: `나는 정밀도가 중요해서 double precision으로 갈거야! 그럼 속도가 128 : 2라 64배 느려짐..`![](../../../../Z.%20Docs/img/Pasted%20image%2020240312172405.png)  
+- 2개의 FP64 units: `나는 정밀도가 중요해서 double precision으로 갈거야! 그럼 속도가 128 : 2라 64배 느려짐..`<img src="Docs/Pasted image 20240312172405.png">
+  
 - 각각의 processing block:  
 - 16개의 FP32: 한 순간에 floating point계산을 해준다.  
 - 16개의 FP32/INT32: 같은 clock에 floating point 연산을 하거나 int 연산을 해준다.  
@@ -223,7 +233,8 @@ else if(obj.1) {
 <br>
 
 [WARP Execution (tistory.com)](https://junstar92.tistory.com/277)  
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240314171217.png)  
+<img src="Docs/Pasted image 20240314171217.png">
+  
 - Stall: memory에 access하거나..하는 delay..를! 번갈아가며 명령을 수행하게 함으로서 delay를 줄인다.  
 - _syncwarp()를 시켜 Z; 뒤에 일어날 명령을 warp에서 한꺼번에 할 수 있도록 sync 시켜준다.  
 
@@ -233,15 +244,16 @@ else if(obj.1) {
 - 7.0 이후: 한 와프 당 다양한 명령어 수행  
 - **_syncwarp()**: warp안 32개의 스레드이 싱크를 맞추라는 명령어 (옛날 CUDA 코드를 최신 GPU로 돌릴 때 오류가 생길 것을 방지하기 위해)  
 - Branch divergence:  
-```c++  
+```c++
 if(x[i] > 0) {
 	z[i] = x[i] - y[i];
 }
 else {
 	z[i] = 2 * x[i] + y[i];
 }
-```  
-- 이것과 같은 코드가 있을 때, 와프에서는 다음과 같이 동작하게 된다. ![](../../../../Z.%20Docs/img/Pasted%20image%2020240314170447.png)  
+```
+- 이것과 같은 코드가 있을 때, 와프에서는 다음과 같이 동작하게 된다. <img src="Docs/Pasted image 20240314170447.png">
+  
 - 그래서 최대한 branch code (switch나 if 등)을 줄이는 것이 좋다.  
 - Inactive thread 판별:  
 - 먼저 끝난 스레드  
@@ -251,9 +263,11 @@ else {
 <br>
 
 - Concurrent thread execution:  
-- 이렇게 같은 곳으로 store 될때, 어느 순서로 store 될지는 모른다.![](../../../../Z.%20Docs/img/Pasted%20image%2020240314172907.png)  
+- 이렇게 같은 곳으로 store 될때, 어느 순서로 store 될지는 모른다.<img src="Docs/Pasted image 20240314172907.png">
+  
 - SIMD vs SIMT:  
-- 단일 명령어, 다중 스레드(SIMT, single instruction, multiple thread)는 병렬 컴퓨팅에서 사용되는 실행 모델로, 단일 명령어, 다중 데이터(SIMD)가 다중 스레드와 결합된다.![](../../../../Z.%20Docs/img/Pasted%20image%2020240314173141.png)  
+- 단일 명령어, 다중 스레드(SIMT, single instruction, multiple thread)는 병렬 컴퓨팅에서 사용되는 실행 모델로, 단일 명령어, 다중 데이터(SIMD)가 다중 스레드와 결합된다.<img src="Docs/Pasted image 20240314173141.png">
+  
 
 <br>
 
@@ -265,7 +279,8 @@ else {
 
 <br>
 
-- GPU는 scalable 하다. 라는 것은 SM의 개수가 프로그램을 짜는 방식에 영향을 미치지 않는다.<br>![](../../../../Z.%20Docs/img/Pasted%20image%2020240314173328.png)  
+- GPU는 scalable 하다. 라는 것은 SM의 개수가 프로그램을 짜는 방식에 영향을 미치지 않는다.<br><img src="Docs/Pasted image 20240314173328.png">
+  
 
 <br>
 
@@ -273,7 +288,8 @@ else {
 
 <br>
 
-- CPU는 task parallelism하고, GPU는 Data Parallelism하다. CPU는 스레드가 많아봐야 몇십개 돌지만, GPU는 스레드가 몇십만 개도 돌고 있다. `GPU 참... 무식하게도 생겼다.`![](../../../../Z.%20Docs/img/Pasted%20image%2020240314173445.png)  
+- CPU는 task parallelism하고, GPU는 Data Parallelism하다. CPU는 스레드가 많아봐야 몇십개 돌지만, GPU는 스레드가 몇십만 개도 돌고 있다. `GPU 참... 무식하게도 생겼다.`<img src="Docs/Pasted image 20240314173445.png">
+  
 
 <br>
 
@@ -288,7 +304,8 @@ else {
 <br>
 
 Task와 CUDA thread간의 mapping관계는 다음과 같이 두 종류가 있다.  
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240314174046.png)  
+<img src="Docs/Pasted image 20240314174046.png">
+  
 - 각각의 task에 대해서 thread 하나씩  
 - (Data가 클 경우) Thread를 건너뛰면서 CUDA 스레드 하나에 여러개의 task 할당  
 
@@ -325,7 +342,8 @@ Task와 CUDA thread간의 mapping관계는 다음과 같이 두 종류가 있다
 
 <br>
 
-- CUDA 프로그래밍을 하려면 다음과 같은 정보는 읽을 줄 알아야 한다.![](../../../../Z.%20Docs/img/Pasted%20image%2020240321164222.png)
+- CUDA 프로그래밍을 하려면 다음과 같은 정보는 읽을 줄 알아야 한다.<img src="Docs/Pasted image 20240321164222.png">
+
 <br>
 
 
@@ -347,7 +365,8 @@ Task와 CUDA thread간의 mapping관계는 다음과 같이 두 종류가 있다
 
 <br>
 
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240321164713.png)  
+<img src="Docs/Pasted image 20240321164713.png">
+  
 - Main memory / GPU memory  
 - .cpp program / .cu program  
 - PINED(page-locked memory): [Pinned Memory (tistory.com)](https://junstar92.tistory.com/284)  
@@ -398,7 +417,8 @@ Task와 CUDA thread간의 mapping관계는 다음과 같이 두 종류가 있다
 <br>
 
 #### 1D Example  
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240321173909.png)  
+<img src="Docs/Pasted image 20240321173909.png">
+  
 - blockDim: $`(2^8, 1, 1)`$  
 - `구구단 외듯이 외우셈~`
 <br>
@@ -412,7 +432,8 @@ Task와 CUDA thread간의 mapping관계는 다음과 같이 두 종류가 있다
 <br>
 
 #### 2D Example  
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240326164108.png)
+<img src="Docs/Pasted image 20240326164108.png">
+
 <br>
 
 
@@ -424,7 +445,8 @@ blockDim.x \times blockIdx.x + threadIdx.x
 \end{align}
 ```
 
-- threadID: 한 thread block 내의 thread의 순서 (1D와 2D같은 경우 계산 방식이 다름)![](../../../../Z.%20Docs/img/Pasted%20image%2020240326164956.png)
+- threadID: 한 thread block 내의 thread의 순서 (1D와 2D같은 경우 계산 방식이 다름)<img src="Docs/Pasted image 20240326164956.png">
+
 <br>
 
 
@@ -484,7 +506,8 @@ threadID_{2D} = blockDim.x \times threadIdx.y + threadIdx.x
 
 #### Single precision  
 > 4 bytes (32 bits)  
-- 구조는 다음과 같다.![](../../../../Z.%20Docs/img/Pasted%20image%2020240404172339.png)  
+- 구조는 다음과 같다.<img src="Docs/Pasted image 20240404172339.png">
+  
 - 구성은 다음과 같다.  
 - Sign indicator: $`(-1)^S, \ S = 0 \ or 1`$  
 - Exponent Characteristic:  
@@ -497,12 +520,14 @@ threadID_{2D} = blockDim.x \times threadIdx.y + threadIdx.x
 
 #### Double precision  
 > 8 bytes (64 bits)  
-- 구조는 다음과 같다.![](../../../../Z.%20Docs/img/Pasted%20image%2020240404172402.png)  
+- 구조는 다음과 같다.<img src="Docs/Pasted image 20240404172402.png">
+  
 
 <br>
 
 #### Format of Single & Double Precision  
-- 여기서 Single의 유효숫자 9와 double의 유효숫자 17은 믿을만한지 다시 한 번 생각해 볼 필요가 있다..![](../../../../Z.%20Docs/img/Pasted%20image%2020240404173606.png)  
+- 여기서 Single의 유효숫자 9와 double의 유효숫자 17은 믿을만한지 다시 한 번 생각해 볼 필요가 있다..<img src="Docs/Pasted image 20240404173606.png">
+  
 
 <br>
 
@@ -583,7 +608,7 @@ threadID_{2D} = blockDim.x \times threadIdx.y + threadIdx.x
 <br>
 
 #### Implementation 1: reduce0  
-```c++  
+```c++
 CHECK_TIME_START(_start, _freq);
 for (int m = N / 2; m > 0; m /= 2) {
     int threads = (256 < m) ? 256 : m;  
@@ -592,8 +617,9 @@ for (int m = N / 2; m > 0; m /= 2) {
 }
 cudaDeviceSynchronize();
 CHECK_TIME_END(_start, _end, _freq, _compute_time);
-```  
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240326173614.png)  
+```
+<img src="Docs/Pasted image 20240326173614.png">
+  
 - reduce0에서 사용하는 prarllel computing 알고리즘:  
 - 종이를 반씩 접는다고 생각  
 - 매 지점마다 sunc를 맞춰줘야 한다. 동일한 크기의 TB로 할당하기 때문에 같이 계산해야되는 TB끼리 단계를 맞춰줘야하기 때문이다.  
@@ -623,7 +649,7 @@ CHECK_TIME_END(_start, _end, _freq, _compute_time);
 - 왜 reduce0보다 빨라졌을까?:  
 - kernel launch 비용(reduce1은 세 번밖에 호출을 안 한다)  
 - reduce0  
-```  
+```
 m
 2048 256 8개
 1024 256 4개
@@ -634,26 +660,27 @@ m
 16 16 1개
 8 8 1개
 1 1 1개
-```  
+```
 - 일을 안하고 노는 SM이 너무 많다!  
 
 <br>
 
 #### reduce0 vs reduce1  
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240404164701.png)  
+<img src="Docs/Pasted image 20240404164701.png">
+  
 - 왜 동일한 GPU 상에서의 결과 값이 미묘하게 변화하였을까?  
 A) 더하는 순서가 바뀌었기 때문이다.  
 - reduce0의 컴파일 모습  
-```c  
+```c
 x[tid] += x[tid + m];
 
 id r5, x[tid]
 id r6, x[tid+m]
 add r7, rs, r6
 st(store) r7. x[tid]
-```  
+```
 - reduce1의 컴파일 모습: global memory access 비용이 상당히 줄어든다.  
-```c  
+```c
 float tsum; // register에 있는 변수, r6
 x[tid] = tsum;
 
@@ -661,7 +688,7 @@ set r6, 0
 id r5, x[k]
 add r6, r6, r5
 st(store) r6, x[tid]
-```  
+```
 
 <br>
 
@@ -683,7 +710,8 @@ st(store) r6, x[tid]
 <br>
 
 GPU -> GPC -> TPC -> SM  
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240409173503.png)  
+<img src="Docs/Pasted image 20240409173503.png">
+  
 ##### On-chip memory and cache  
 - Register  
 - Shared memory / L1 cache / Texture cache  
@@ -704,14 +732,16 @@ GPU -> GPC -> TPC -> SM
 
 <br>
 
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240409174120.png)  
+<img src="Docs/Pasted image 20240409174120.png">
+  
 - Register and local memory: Per thread  
 - Shared memory: Per thread block  
 - Global, constant, texture memory: persistent across kernel launches by the same application  
 
 <br>
 
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240411163813.png)  
+<img src="Docs/Pasted image 20240411163813.png">
+  
 - Scope: 어떠한 변수가 영향을 미치는 범위  
 - Lifetime: 어떠한 변수를 쓸 수 있는 수명  
 - Automatic variable: 특정한 함수 안에서만 사용하는 변수  
@@ -748,7 +778,8 @@ GPU -> GPC -> TPC -> SM
 
 <br>
 
-![](../../../../Z.%20Docs/img/Pasted%20image%2020240411172554.png)  
+<img src="Docs/Pasted image 20240411172554.png">
+  
 - bank bandwidth = 32 bits / clock  
 - Shared memory의 bandwidth = 128 bytes / clock  
 
@@ -835,11 +866,11 @@ $`C_{ij} = \sum\limits_{k = 0}^{n} (A_{ik} \times B_{kj})`$
 <br>
 
 초기값들은 다음과 같다. `row(행): 세로, col(열): 가로`  
-```cpp  
+```cpp
 int Arow = 1024; int Acol = 2048;
 int Brow = Acol; int Bcol = 3200;
 int Crow = Arow; int Ccol = Bcol;
-```  
+```
 
 <br>
 
@@ -849,7 +880,7 @@ int Crow = Arow; int Ccol = Bcol;
 <br>
 
 기본 적으로 A의 가로, B의 세로를 순차적으로 방문하며 inner product 연산을 수행한다. 이를 for loop으로 구현하면 다음과 같다.  
-```cpp  
+```cpp
 for(int i = 0; i < Ay; i++) {
 	for(int j = 0; j < Bx; j++) {
 		C[i * Bx + j] = 0.0f;
@@ -858,7 +889,7 @@ for(int i = 0; i < Ay; i++) {
 		}
 	}
 }
-```  
+```
 load: $`A_yB_xA_x \times 3`$  
 store: $`A_yB_x(1+A_x)`$  
 `상식적으로 생각해보면 알 수 있다. 잘 생각해보자.`  
@@ -872,9 +903,9 @@ store: $`A_yB_x(1+A_x)`$
 
 `__restrict`는 컴파일러로 하여금 포인터가 가리키는 객체에 접근하는 유일한 방법이 해당 포인터라는 것을 알려준다.  
 `애꿎은 최적화 시도 하지 말고 가리킨대로 메모리에 접근하라는 말 같다.`  
-```cpp  
+```cpp
 int hostmult1(float* __restrict C, float* __restrict A, float* __restrict B, int Ay, int Ax, int Bx) {...}
-```  
+```
 하지만 이렇게 `__restrict`를 해도 속도에는 크게 변화가 없는데, 컴파일러가 이미 최적화를 한 것으로 추정된다.  
 
 <br>
@@ -885,14 +916,14 @@ int hostmult1(float* __restrict C, float* __restrict A, float* __restrict B, int
 
 <br>
 
-```cpp  
+```cpp
 /* Host */
 gpumult0 <<< blocks, threads >>> (d_C, d_A, d_B, Arow, Acol, Bcol);
 
 /* Kernel */
 int tx = blockidx.x * blockDim.x + threadidx.x; // i
 int ty = blockidx.y * blockDim.y + threadidx.y; // j
-```  
+```
 hostmult0 대비 약 178배의 속도 향상을 얻을 수 있다.  
 
 <br>
@@ -905,7 +936,7 @@ thread 요구량이 32 * 16에서 32 * 32 두 배가 돼서 register가 배부�
 <br>
 
 read write cost도 다음과 같이 줄일 수 있다.  
-```cpp  
+```cpp
 /* Before Modified */
 C[ty * Bx + tx] = 0.0f;
 for(int k = 0; k < Ax; k++)
@@ -916,7 +947,7 @@ float csum = 0.0f;
 for(int k = 0; k < Ax; k++)
 	csum += A[ty * Ax + k] * B[k * Bx + tx];
 C[ty * Bx + tx] = csum;
-```  
+```
 Total GM load Before: $`A_yB_xA_x \times 3`$  
 Total GM store Before: $`A_yB_x`$  
 Total GM load After: $`A_yB_xA_x \times 2`$  
@@ -926,9 +957,9 @@ Total GM store After: $`A_yB_x`$
 
 #### gpumult1  
 함수에 전달하는 인자에  `__restrict`를 부여한다.  
-```cpp  
+```cpp
 int gpumult1(float* __restrict C, float* __restrict A, float* __restrict B, int Ay, int Ax, int Bx) {...}
-```  
+```
 gpumult0 대비 약 3배의 속도 향상을 얻을 수 있다.  
 
 <br>
@@ -948,7 +979,7 @@ gpumult처럼 tiled된 계산을 하되, Shared Memory를 활용하여 Global Me
 <br>
 
 Kernel 함수가 특이하게 바뀐다.  
-```cpp  
+```cpp
 /* Host */
 if (tilex == 16)
 gputiled<16> <<< blocks, threads >>> (d_C, d_A, d_B, Arow, Acol, Bcol);
@@ -969,7 +1000,7 @@ template<int TS> __global__ void gputiled(float* __restrict C, float* __restrict
 	}
 	C[ay * Bx + bx] = csum;
 }
-```  
+```
 그러니까 $`C_{ij}`$를 계산하기 위해서 $`A_i`$행과 $`B_j`$열을 inner   
 
 <br>
@@ -1154,7 +1185,7 @@ B는 왜 굳이 shared memory에 올리느냐? global memory에 올릴 필요도
 
 <br>
 
-```  
+```
 /* Kernel Launches */
 
 CHECK_TIME_START();
@@ -1169,7 +1200,7 @@ CHECK_TIME_END();
 cudaMemcpyAsync()
 
 /* Memory set function calls */
-```  
+```
 
 <br>
 
@@ -1313,15 +1344,15 @@ $`(non-0)`$ | 7 6 2
 
 ##### Non-default(Non-null) Stream  
 Non-default stream은 다음과 같은 명령어들로 생성할 수 있다.  
-```cpp  
+```cpp
 __host__ cudaError_t cudaStreamCreate(sudaStream_t* pStrea)
 __host__ __device__ cudaError_t cudaStreamCreateWithFlags(cudaStream_t* pStream, unsigned int flags)
-```  
+```
 
 <br>
 
 예시 코드는 다음과 같다.  
-```cpp  
+```cpp
 cudaStrea_t stream[2];
 for(int i = 0; i < 2; i++)
 	cudaStreamCreate(&stream[i]);
@@ -1339,12 +1370,12 @@ for(int i = 0; i < 2; i++) {
 
 for (int i = 0; i < 2; ++i)
 	cudaStreamDestroy(stream[i]);
-```  
+```
 
 <br>
 
 위 코드를 시각화 하면 다음과 같다.  
-```  
+```
 Host Mem
 |-------0------|-------1------|
 |-----size-----|--------------|
@@ -1367,15 +1398,15 @@ str[1]
 
 들어가는 순서
 D2H_1  K_1  H2D_1  D2H_0  K_0  H2D_0
-```  
+```
 
 <br>
 
-```  
+```
 str[0]       -H2D-  -Kernel--..--------- -D2H-
 str[1]              -H2D-  -Kernel--..--        -D2H-
             |------|------|--..--|------|------|------|
-```  
+```
 - H2D-H2D와 D2H-D2H는 동시에 실행할 수 없다.  
 
 <br>
@@ -1409,13 +1440,13 @@ Default stream이 아닌 Non-blocking stream을 만들려면 명시적으로 코
 
 <br>
 
-```  
+```
 Kernel_1 <<< grid_1, block_1, 0, Stream_1 >>> (a, b, c);
 Kernel_2 <<< grid_2, block_2, 0, Stream_2 >>> ();
 Kernel_3 <<< grid_3, block_3 >>> (d, e, f);
 Kernel_4 <<< grid_4, block_4, 0, Stream_1 >>> (g, h);
-```  
-```mermaid  
+```
+```mermaid
 sequenceDiagram
 
 	participant H as Host
@@ -1424,7 +1455,7 @@ sequenceDiagram
 	H->>+D: K3 (S0)
 	H->>+D: K4 K1 (S1)
 	H->>+D: K2 (S2)
-```  
+```
 
 <br>
 
@@ -1449,7 +1480,7 @@ semaphore + fence라고 생각하면 된다.
 <br>
 
 - `cudaEventRecord(cudaEvent_t event(17), cudaStream_t stream(33))`:  
-```Null  
+```Null
 event 17 {  }
 
 stream 33
@@ -1465,7 +1496,7 @@ event 17 {
 		위의 명령들이 모두 수행되고 나면 status가 succeed/complete으로 바뀐다.
 	timestamp; // status가 complete 상태로 바뀌는 순간의 시간이 기록된다.
 }
-```  
+```
 
 <br>
 
@@ -1478,7 +1509,7 @@ CPU를 잡고있는게 아니라 해당 event가 complete 상태인지 확인하
 <br>
 
 #### Example1  
-```c  
+```c
 cudaEvent_t start, stop;
 // Creation
 cudaEventCreate(&start);
@@ -1502,12 +1533,12 @@ cudaEventRecord(stop, 0);
 cudaEventSynchronize(stop);
 float elapsedTime;
 cudaEventElapsedTime(&elapsedTime, start, stop); // stop - start = ?? ms
-```  
+```
 Device에서 측정한 모든 명령이 끝날 때 까지 걸린 시간이 elapsedTime에 기록된다.  
 
 <br>
 
-```  
+```
 H -------------------> D
 
 Null
@@ -1524,14 +1555,14 @@ str[1]
 --------------------->
   D2H_1  K_1  H2D_1
 --------------------->
-```  
+```
 
 <br>
 
 이게 왜 있어야 할까?  
-```c  
+```c
 cudaEventSymchronize(stop);
-```  
+```
 - stop event가 complete 상태가 될 때까지 CPU를 잡고 있어라는 것이다. 즉, stop에 timestamp가 찍힐 때까지 기다렸다가 가라는 것이다.  
 
 <br>
@@ -1687,17 +1718,17 @@ If two or more threads write to the same memory location simultaneously, one thr
 <br>
 
 다음과 같은 CUDA에서 제공하는 함수들이 있다.  
-```cpp  
+```cpp
 int atomicAdd(int* address, int val);
 // address에 있는 주소에 rmw를 하는 것. m는 +val을 해주는 것.
-```  
+```
 
 <br>
 
 이를 바탕으로 26p. 처럼 바꾸면 계산이 제대로 된다.  
-```cpp  
+```cpp
 atomicAdd(&histogram[(unsigned int)(intensity + 0.5f)], 1);
-```  
+```
 
 <br>
 
@@ -1715,12 +1746,12 @@ atomicAdd(&histogram[(unsigned int)(intensity + 0.5f)], 1);
 
 x, y: 전체 이미지 기준 좌표  
 먼저 (기계적으로) shared memroy의 값을 0으로 초기화해준다.  
-```cpp  
+```cpp
 if(threadIdx.x == 0)
 	for(int i = 0; i < 255; i++)
 		histogram[i] = 0
 // 이렇게 해도 되는데 멋이 안 난다...
-```  
+```
 
 <br>
 
@@ -1775,7 +1806,7 @@ Addr 주소에 count 만큼 write해라
 <br>
 
 #### Inclusive Scan  
-```cpp  
+```cpp
 /* cost: N - 1 additions for an array of size N -> O(N) */
 void sequential_scan(float *x, float *y, unsigned int N) {
 	y[0] = x[0];
@@ -1783,7 +1814,7 @@ void sequential_scan(float *x, float *y, unsigned int N) {
 		y[i] = y[i - 1] + x[i];
 	}
 }
-```  
+```
 
 <br>
 
@@ -1857,7 +1888,7 @@ P = P_1\frac{|v - v_2|}{|v_2 - v_1|}+P_2\frac{|v - v_1|}{|v_2 - v_1|}
 <br>
 
 CPU 코드는 다음과 같다. (이외에도 추가로 normal을 계산하는 코드도 있다.)  
-```cpp  
+```cpp
 for(int KK = 1; KK < vol_n_z - 2; KK++) {
 	for(int JJ = 1; JJ < vol_n_y - 1; JJ++) {
 		for(int II = 1; II < vol_n_x - 1; II++) {
@@ -1866,7 +1897,7 @@ for(int KK = 1; KK < vol_n_z - 2; KK++) {
 		}
 	}
 }
-```  
+```
 이를 GPU에서 돌리면 CPU에서 500ms 걸리던게 3ms로 단축된다.  
 
 <br>
@@ -1909,7 +1940,7 @@ for(int KK = 1; KK < vol_n_z - 2; KK++) {
 > $`(nx,\ ny,\ nz) : (I,\ J,\ K)`$  
 > $`L`$: 전체 data array의 index  
 - 코드로는 다음과 같이 $`(I,\ J,\ K)`$와 $`L`$를 왔다갔다 할 수 있다.  
-```cpp  
+```cpp
 __device__ uint3 calcGridPos(uint i, uint3 gridSizeShift, uing3 gridSizeMask) {
 	uint gridPos;
 	gridPos.x = i & gridSizeMask.x;
@@ -1917,7 +1948,7 @@ __device__ uint3 calcGridPos(uint i, uint3 gridSizeShift, uing3 gridSizeMask) {
 	gridPos.z = (i >> gridSizeShift.z);
 	return gridPos;
 }
-```  
+```
 
 <br>
 
@@ -1933,7 +1964,7 @@ __device__ uint3 calcGridPos(uint i, uint3 gridSizeShift, uing3 gridSizeMask) {
 <img src="Docs/Pasted image 20240613164938.png" width="200">
   
 - 각각의 cell에서 나올 수 있는 선분의 종류는 총 16개인 것을 알 수 있다.  
-```  
+```
 Isovalue = a;
 
 for(J = 0; J < ny - 1; J++) {
@@ -1942,7 +1973,7 @@ for(J = 0; J < ny - 1; J++) {
 		else if f(I, J) < a; // outside
 	}
 }
-```  
+```
 
 <br>
 

@@ -57,7 +57,8 @@
 <br>
 
 #### Reference  
-![](../../../Z.%20Docs/img/gltfOverview-2.0.0d.png)  
+<img src="Docs/gltfOverview-2.0.0d.png">
+  
 - [glTF – Runtime 3D Asset Delivery (github.com)](https://github.com/KhronosGroup/glTF)  
 - [glTF Viewer](https://gltf-viewer.donmccurdy.com/)  
 - [glTF Project Explorer (khronos.org)](https://github.khronos.org/glTF-Project-Explorer/)  
@@ -104,7 +105,7 @@ glTF의 코어는 **JSON 파일**의 형태로 3D 모델들을 포함하고 있�
 3D 요소를 렌더링하는 데 필요한 외부 파일들은 `buffers`와 `images`에 저장된다.    
 `buffers`에는 Geometry나 애니메이션 정보를 저장하고 있는 `.bin` 파일들을,    
 `images`에는 Model의 텍스쳐 정보를 저장하고 있는 `.png`, `jpg` 파일들을 저장한다.  
-```json  
+```json
 "buffers": [
 	{
 		"uri": "buffer01.bin"
@@ -116,20 +117,20 @@ glTF의 코어는 **JSON 파일**의 형태로 3D 모델들을 포함하고 있�
 		"uri": "image01.png"
 	}
 ]
-```  
+```
 
 <br>
 
 #### Binary Data references - base64  
 위 처럼 파일 데이터를 URI로 참조하는 대신 데이터 자체를 JSON 내에 포함시킬 수도 있다.    
 MIME 타입 `data:MIMtype`을 정의하고, base64 `base64,string` 형식으로 직접 정보를 입력해놓는다.  
-```json  
+```json
 // Buffer Data:
 "data:application/gltf-buffer;base64,AAABAAIAAgA..."
 
 // Image Data:
 "data:image/png;base64,iVBORw0K..."
-```  
+```
 
 <br>
 
@@ -160,7 +161,7 @@ M_M = T \times R \times S
 ```
 
 T, R, S 정보는 animation의 타겟이 되기도 한다. 시간이 지날 때마다 어떤 Transformation을 참조할지 변화를 주는것이다. 이를 통해 Object나 Camera를 움직인다.  
-```json  
+```json
 "nodes": [
 	{
 		"matrix": [
@@ -181,13 +182,13 @@ T, R, S 정보는 animation의 타겟이 되기도 한다. 시간이 지날 때�
 		...
 	},
 ]
-```  
+```
 
 <br>
 
 각각의 Node는 이에 더해 **Mesh** 또는 **Camera**를 참조할 수 있다.    
 이 정보들은 위의 Transformation 정보와 더해져 렌더링 된다.  
-```json  
+```json
 "nodes:" [
 	{
 		"mesh": 4,
@@ -198,7 +199,7 @@ T, R, S 정보는 animation의 타겟이 되기도 한다. 시간이 지날 때�
 		...
 	},
 ]
-```  
+```
 
 <br>
 
@@ -216,7 +217,7 @@ Node들은 Vertex Skinning에 쓰이기도 하는데, 움직이는 모델의 Ske
 **Camera**의 구성요소는 Type에 따라 상이해지는데, 그 분류는 다음과 같다.  
 - **Perspective**: 원근 투영  
 - **Orthographic**: 평행 투영의 일종  
-```json  
+```json
 "cameras": [
 	{
 		"type": "perspective",
@@ -237,7 +238,7 @@ Node들은 Vertex Skinning에 쓰이기도 하는데, 움직이는 모델의 Ske
 		}
 	}
 ]
-```  
+```
 `zfar`의 설정값은 입력해도 되고, 안 해도 된다. 입력하지 않을시, Camera는 Infinite Projection을 위해 특수한 Matrix를 쓰게된다.  
 
 <br>
@@ -282,7 +283,7 @@ Camera의 Matrix, 다른 말로 **Projection Transformation**, 기호로 $`M_P`$
 <img src="Docs/Pasted image 20240701190936.png" width="400">
   
 - **Meterial**: 관련 Meterial의 인덱스  
-```json  
+```json
 "meshes": [
  {
   "primitives": [
@@ -298,7 +299,7 @@ Camera의 Matrix, 다른 말로 **Projection Transformation**, 기호로 $`M_P`$
   ]
  }
 ]
-```  
+```
 
 <br>
 
@@ -312,7 +313,7 @@ Mesh는 또한 **Morph Target**을 여러개 만들어 Mesh의 변형을 묘사�
 
 - **Targets**: 변형 별 attributes의 여러 버전이라 생각하면 된다.  
 - **Weights**: Mesh의 최종 렌더링 상태에 대한 각 Morph Target의 기여도를 정의하는 가중치이다.  
-```json  
+```json
 {
  "primitive": [
   {
@@ -331,7 +332,7 @@ Mesh는 또한 **Morph Target**을 여러개 만들어 Mesh의 변형을 묘사�
   ],
  "weights": [0, 0.5]
 }
-```  
+```
 이렇게 여러개의 Morph Target을 가중치를 다르게 두어 정의함으로써 예를 들자면,    
 캐릭터의 얼굴 움직임을 표현할 수 있다. weights와 관련해서, 표정이 변화함에 따라 많이 움직이는 근육이 있고 안 그런 근육이 있음을 상상해보자.  
 
@@ -354,16 +355,16 @@ Access하는 방법이 처음 볼 땐 꽤나 복잡하니 주의깊게 코드와
 <br>
 
 이 section을 이해하기 전, 다음 OpenGL 함수를 알고 가는 것이 좋을 것이다.  
-```cpp  
+```cpp
 glBindBuffer(GL_ARRAY_BUFFER, bufferID);
-```  
+```
 - **glBindBuffer**: 버퍼 객체를 현재 OpenGL 상태 컨텍스트에 바인딩하는 함수  
 - 버퍼 객체는 GPU 메모리에 데이터를 저장하는 데 사용된다.  
 - 이 함수를 사용하여 OpenGL이 특정한 유형의 버퍼 (array buffer, index buffer 등)에 접근할 수 있도록 설정한다.  
 
 <br>
 
-```cpp  
+```cpp
 glVertexAttribPointer(attributeIndex, size, type, normalized, stride, pointer);
 // attributeIndex: vertex shader에서 해당 vertex 속성의 인덱스
 // size: 속성 하나당 요소의 개수
@@ -373,7 +374,7 @@ glVertexAttribPointer(attributeIndex, size, type, normalized, stride, pointer);
 // pointer: 속성 데이터의 시작 위치
 glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 // 현재 바인딩된 'GL_ARRAY_BUFFER'로부터 vertex 위치 데이터를 가져오고, 이 데이터가 vertex shader의 attribute 인덱서 0에서 사용됨을 정의한다.
-```  
+```
 - **glVertexAttribPointer**: 현재 바인딩된 버퍼에서 vertex 속성 데이터를 가져오는 방법을 OpenGL에 알려주는 함수  
 - vertex 속성 데이터는 vertex array에서 vertex의 위치, 색상, 덱스처 좌표 등과 같은 정보를 의미한다.  
 - 이 함수를 사용하여 GPU가 버퍼의 데이터를 해석하는 방법을 정의하는 데 사용된다.  
@@ -382,14 +383,14 @@ glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 #### Buffers  
 Block 하나당 **URI**를 사용하여 **byteLength** 크기의 Binary data 파일을 지정한다.  
-```json  
+```json
 "buffers": [
 	{
 		"byteLength": 35,
 		"uri": "buffer01.bin"
 	}
 ],
-```  
+```
 
 <br>
 
@@ -397,7 +398,7 @@ Block 하나당 **URI**를 사용하여 **byteLength** 크기의 Binary data 파
 BufferViews와 Buffers가 일대일 대응으로 할당된다.    
 **byteOffset**과 **byteLength**를 이용하여 BufferView에 속한 Buffer의 부분을 정의한다.    
 OpenGL Buffer 관련 **target** 지정은 Optional이다.  
-```json  
+```json
 "bufferViews": [
 	{
 		"buffer": 0,  // 대응되는 buffers의 인덱스 번호
@@ -407,7 +408,7 @@ OpenGL Buffer 관련 **target** 지정은 Optional이다.
 		"target": 34963
 	}
 ],
-```  
+```
 
 <br>
 
@@ -418,7 +419,7 @@ Accesors는 대응되는 BufferView의 data가 어떻게 해석될지 정의한�
 - **type**: 데이터 유형 `2D vector -> "VEC2"`  
 - **componentType**: 데이터 타입 `GL_FLOAT(5126)`  
 - **min, max**: 데이터 전체 값의 범위    
-```json  
+```json
 "accessors": [
 	{
 		"bufferView": 0,
@@ -430,7 +431,7 @@ Accesors는 대응되는 BufferView의 data가 어떻게 해석될지 정의한�
 		"max": [0.9, 0.8]
 	}
 ]
-```  
+```
 
 <br>
 
@@ -444,7 +445,7 @@ Accessor의 몇몇 부분만 디폴트값과 다른 경우(대부분의 경우�
 - **count**: 별개로 다룰 data 요소의 개수  
 - **values**: Sparse된 data가 저장되어있는 BufferView의 인덱스를 가리킨다.  
 - **indices**: Sparse된 data의 인덱스가 저장되어있는 BufferView의 인덱스를 가리킨다.  
-```json  
+```json
 "accessors": [
  {
 	 "type": "SCALAR",
@@ -465,7 +466,7 @@ Accessor의 몇몇 부분만 디폴트값과 다른 경우(대부분의 경우�
 	},
  }
 ]
-```  
+```
 <img src="Docs/Pasted image 20240702161253.png" width="300">
   
 그러니까 value array를 indices array를 통하여 access 하는 것이다.  
@@ -511,7 +512,7 @@ glVertexAttribPointer: 현재 바인딩된 버퍼에서 vertex 속성 데이터�
 
 #### Other Properties  
 이제 코드를 살펴보며 다른 Properties도 알아보자.  
-```json  
+```json
 "meterials": [
 	{
 		"pbrMetallicRoughness": {      // Metallic-Roughness-Model
@@ -546,7 +547,7 @@ glVertexAttribPointer: 현재 바인딩된 버퍼에서 vertex 속성 데이터�
 	"emissiveTactor":       // used to illuminate parts of surface
 		[0.4, 0.8, 0.6]
 ]
-```  
+```
 
 <br>
 
@@ -554,7 +555,7 @@ glVertexAttribPointer: 현재 바인딩된 버퍼에서 vertex 속성 데이터�
 <img src="Docs/Pasted image 20240703135444.png" width="600">
   
 Meterial에서도 마찬가지로 Textures를 참조할 때 인덱스로 참조한다.    
-```json  
+```json
 "meshes": [
 	{
 		"primitives": [
@@ -593,7 +594,7 @@ Meterial에서도 마찬가지로 Textures를 참조할 때 인덱스로 참조�
 		"sampler": 2
 	}
 ],
-```  
+```
 
 <br>
 
@@ -607,7 +608,7 @@ Meterial에서도 마찬가지로 Textures를 참조할 때 인덱스로 참조�
 
 <br>
 
-```json  
+```json
 "textures": [
 	{
 		"source": 4,  // images에 대한 인덱스
@@ -637,7 +638,7 @@ Meterial에서도 마찬가지로 Textures를 참조할 때 인덱스로 참조�
 		"wrapT": 10497
 	}
 ],
-```  
+```
 
 <br>
 
@@ -669,7 +670,7 @@ glTF에서 Skinning은 Rigging이 되어있다는 전제 하에 돌아가는 것
 <br>
 
 다음은 위 그림의 구조를 나타낸 코드이다.  
-```json  
+```json
 "nodes": [
 	{
 		"name":
@@ -721,7 +722,7 @@ glTF에서 Skinning은 Rigging이 되어있다는 전제 하에 돌아가는 것
 		"joints": [1, 2, 3 ...]
 	}
 ],
-```  
+```
 
 <br>
 
@@ -774,7 +775,7 @@ glTF에서 Skinning은 Rigging이 되어있다는 전제 하에 돌아가는 것
 - WEIGHT  
 - 위의 Accessor를 통한 데이터는 Vertex Shader에 `jointMatrix` 배열과 함께 전달된다.  
 - Vertex Shader에서는 최종적으로 `skinMatrix`가 계산된다. 실제 Vertex Shader의 코드를 보자.  
-```cpp  
+```cpp
 uniform mat4 u_jointMatrix[12];
 attribute vec4 a_position;
 attribute vec4 a_joint;
@@ -790,7 +791,7 @@ void main(void) {
 	gl_Position = 
 		modelViewProjection * skinMatrix * position;
 }
-```  
+```
 
 <br>
 
@@ -812,7 +813,7 @@ Morph Target의 Weight에 영향을 주어 물체에 변형을 일으킬 수도 
 - **input**에는 animation의 키프레임 시간 상수인 floating-point 값을,  
 - **output**에서는 키프레임 시간에 따른 Animation property가 나온다.  
 - **interpolation**: 애니메이션 보간 기법으로, 키프레임을 지정해두면 그 사이는 지정한 옵션에 따라 `LINEAR, STEP, CUBICSPLINE` 하게 보간한다.  
-```json  
+```json
 "animations": [
 	{
 		"channels": [
@@ -833,7 +834,7 @@ Morph Target의 Weight에 영향을 주어 물체에 변형을 일으킬 수도 
 		]
 	}
 ]
-```  
+```
 
 <br>
 
@@ -873,7 +874,8 @@ glTF에서 External Binary Resource를 포함시킬 때 두 가지 옵션이 존
 - **header**: 버전과 데이터 구조 증 기본 정보 제공  
 - **chunks**: 실제 데이터 포함, 첫번째 chunk는 항상 JSON 데이터이다.  
 자세한 구조는 밑의 그림의 설명을 찬찬히 읽어보면 쉽게 이해될 것이다.  
-![](../../../Z.%20Docs/img/Pasted%20image%2020240704134859.png)  
+<img src="Docs/Pasted image 20240704134859.png">
+  
 
 <br>
 
@@ -884,7 +886,7 @@ glTF에서 External Binary Resource를 포함시킬 때 두 가지 옵션이 존
 glTF에는 여러 함수를 추가할 수 있는 **Extension**들이 존재한다.   
 - **extensionsUsed**: 쓰인 Extension들  
 - **extensionsRequired**: Asset을 로드하는 데 엄격하게 필요한 Extension들  
-```json  
+```json
 "extensionsUsed": [
 	"KHR_lights_common",
 	"CUSTOM_EXTENSION"
@@ -908,12 +910,13 @@ glTF에는 여러 함수를 추가할 수 있는 **Extension**들이 존재한�
 		}
 	}
 ]
-```  
+```
 
 <br>
 
 다음은 현재 존재하는 Extension들이다.  
-![](../../../Z.%20Docs/img/Pasted%20image%2020240704140518.png)  
+<img src="Docs/Pasted image 20240704140518.png">
+  
 Draco로 압축하거나,    
 Point Light, Spot light, Directional Light를 지원하고나,  
 <img src="https://www.kitware.com/main/wp-content/uploads/2021/01/carbonComp0-1024x508.png" width="200">
@@ -944,7 +947,7 @@ Specular 반사 파라미터에 색상과 강도를 추가하던가,
 
 <br>
 
-```json  
+```json
 {
   "scene": 0,
   "scenes" : [
@@ -1063,7 +1066,7 @@ Specular 반사 파라미터에 색상과 강도를 추가하던가,
   }
   
 }
-```  
+```
 
 <br>
 
@@ -1118,7 +1121,7 @@ Specular 반사 파라미터에 색상과 강도를 추가하던가,
 
 <br>
 
-```json  
+```json
   "animations": [
     {
       "samplers" : [
@@ -1151,6 +1154,6 @@ Specular 반사 파라미터에 색상과 강도를 추가하던가,
       ]
     }
   ],
-```  
+```
 
 <br>
